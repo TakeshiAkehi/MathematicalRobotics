@@ -42,9 +42,8 @@ def residual(pose3, param):
     t = pose3.translation()
     T = pose3.matrix()
 
-    # r = R.dot(a) + t - b
     # r = R.matrix().dot(a) + t - b
-    r = pose3.transformFrom(a) - b
+    r = pose3_cur.transformFrom(gtsam.Point3(a)) - b
 
     I = np.eye(3)
     j = np.zeros([4, 6])
@@ -58,11 +57,11 @@ def plus(pose3, delta):
     """
     The incremental function of SE3 is given in guass_newton_method.md (5)
     """
+    # delta : omega,v
 
-    delta_pose3 = gtsam.Pose3.Expmap(delta)
-    # delta_se3 = delta_pose3.matrix()
-    # ret_se3 = pose3.matrix() @ delta_se3
-    ret_pose3 = pose3.transformPoseTo(delta_pose3)
+    xi = np.hstack([delta[3:6],delta[0:3]])
+    delta_pose3 = gtsam.Pose3.Expmap(xi)
+    ret_pose3 = pose3*delta_pose3
     return ret_pose3
 
 
@@ -75,14 +74,18 @@ if __name__ == '__main__':
     a = load_pcd("data/bunny.pcd")
     b = transform3d(T_truth, a.T).T
     elements = a.shape[0]
-    b += np.random.normal(0, 0.001, (elements, 3))
+    Random = np.random.RandomState(1)
+    b += Random.normal(0, 0.001, (elements, 3))
     params = []
     for i in range(a.shape[0]):
         params.append([a[i], b[i]])
 
     gn = guassNewton(6, residual, params, plus)
-    # T_cur = expSE3(np.array([0., 0., 0., 0., 0., 0.]))
-    pose3_cur = gtsam.Pose3.Expmap([0., 0., 0., 0., 0., 0.])
+    pose3_cur = gtsam.Pose3.Expmap(np.array([0., 0., 0., 0., 0., 0.]))
+    # pose3_cur = gtsam.Pose3.Expmap([ 4., 5., 6.,1., 2., 3.]) # rot,trans
+    initial_res,initial_jac = residual(pose3_cur,params[0])
+    print(initial_res)
+    print(initial_jac)
 
     cur_a = a.copy()
     last_score = None
@@ -92,7 +95,7 @@ if __name__ == '__main__':
         dx, score = gn.solve_once(pose3_cur)
         pose3_cur = gn.plus(pose3_cur, dx)
         # cur_a = transform3d(T_cur, a.T).T
-        cur_a = pose3_cur.rotation().matrix()@a.T + pose3_cur.translation()[:,np.newaxis]
+        cur_a = (pose3_cur.rotation().matrix()@a.T + pose3_cur.translation()[:,np.newaxis]).T
         print('iter %d: %f' % (itr, score))
         itr += 1
         if (last_score is None):
@@ -103,22 +106,4 @@ if __name__ == '__main__':
         if (last_score - score < 0.0001):
             break
         last_score = score
-    # plt3d.show()
-
-"""
-
-pose3 = gtsam.Pose3()
-    1. gtsam.gtsam.Pose3()
-    2. gtsam.gtsam.Pose3(other: gtsam.gtsam.Pose3)
-    3. gtsam.gtsam.Pose3(r: gtsam.gtsam.Rot3, t: numpy.ndarray[numpy.float64[3, 1]])
-    4. gtsam.gtsam.Pose3(pose2: gtsam.gtsam.Pose2)
-    5. gtsam.gtsam.Pose3(mat: numpy.ndarray[numpy.float64[m, n]])
-
-pose3 = gtsam.Pose3.Expmap(vector6:Iterable[float])
-
-vector6 : numpy.ndarray = gtsam.Pose3.Logmap()
-
-pose3.rotation() : gtsam.Rot3
-pose3.translation() : numpy.ndarray
-
-"""
+    plt3d.show()

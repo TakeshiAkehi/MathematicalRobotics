@@ -61,14 +61,21 @@ if __name__ == '__main__':
     # a = (np.random.rand(elements, 3)-0.5)*2
     b = transform3d(T_truth, a.T).T
     elements = a.shape[0]
-    b += np.random.normal(0, 0.001, (elements, 3))
+    Random = np.random.RandomState(1)
+    b += Random.normal(0, 0.001, (elements, 3))
 
     params = []
     for i in range(a.shape[0]):
         params.append([a[i], b[i]])
 
     gn = guassNewton(6, residual, params, plus)
+    # T_cur = expSE3(np.array([1., 2., 3., 4., 5., 6.]))
     T_cur = expSE3(np.array([0., 0., 0., 0., 0., 0.]))
+    initial_res,initial_jac = residual(T_cur,params[0])
+    print(initial_res)
+    print(initial_jac)
+
+
     cur_a = a.copy()
     last_score = None
     itr = 0
