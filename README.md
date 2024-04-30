@@ -1,3 +1,14 @@
+MathematicalRobotics & GTSAM for studying
+
+
+GTSAM basics
+* docs_gtsam_study/gtsam_basic.md
+* gauss_newton_method/demo_3d_gtsam.py
+
+
+----
+original readme:
+
 # MathematicalRobotics
 
 ## What is this?
