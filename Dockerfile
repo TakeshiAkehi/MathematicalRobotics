@@ -6,3 +6,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get install -y python3-pyparsing python3-pip
 RUN apt-get -y install libatlas-base-dev libsuitesparse-dev libmetis5 libmetis-dev
 RUN apt-get -y install python3-pyqt5 
+
+RUN apt-get -y install graphviz default-jre curl && \
+	mkdir -p /opt/plantuml && \
+	curl -o /opt/plantuml/plantuml.jar -L "http://github.com/plantuml/plantuml/releases/latest/download/plantuml.jar" 

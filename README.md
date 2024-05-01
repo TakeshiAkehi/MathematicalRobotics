@@ -1,10 +1,12 @@
 MathematicalRobotics & GTSAM for studying
 
-
-GTSAM basics
-* docs_gtsam_study/gtsam_basic.md
+GTSAM pose3 basics
+* docs_gtsam_study/gtsam_pose3.md
 * gauss_newton_method/demo_3d_gtsam.py
 
+GTSAM graph optimization basics
+* docs_gtsam_study/gtsam_pgo.md
+* graph_optimization/demo_pose3d_graph_gtsam.py
 
 ----
 original readme:

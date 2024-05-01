@@ -6,8 +6,21 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "ms-python.python"
-            ]
+                "ms-python.python",
+                "shd101wyy.markdown-preview-enhanced",
+                "charliermarsh.ruff"
+            ],
+            "settings": {
+                "[python]": {
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll": "explicit",
+                        "source.organizeImports": "explicit"
+                    },
+                "editor.defaultFormatter": "charliermarsh.ruff",
+                "markdown-preview-enhanced.plantumlJarPath": "/opt/plantuml/plantuml.jar"
+                }
+            }
         }
     },
     "postCreateCommand": "/bin/bash ./post_create.sh"
